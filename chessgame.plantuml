@@ -1,0 +1,141 @@
+@startuml
+class point{
+	+ point(int,int)
+	+ ~point()
+	+ int getx(void)
+	+ int gety(void)
+	- int m_x
+	- int m_y
+}
+
+class piece{
+	+ enum color{black=1,white=2}
+	+ piece(int,int,color)
+	+ piece(point*,color)
+	+ ~piece()
+	+ color getc(void)
+	- m_c
+}
+point<|-- piece
+
+class chessboard{
+	+ enum size{LEN=15,MAXNUM=225}
+	+ enum state{empty=0,black=1,white=2}
+	+ chessboard()
+	+ ~chessboard()
+	+ bool istaken(int,int)
+	+ bool isempty()
+	+ bool isfull()
+	+ bool isbound(int,int)
+	+ int getn()
+	+ state gets(int,int)
+	+ bool sets(int,int,state)
+	+ void show(point*)
+	- int num
+	- state array[LEN][LEN]
+	- void line_draw(int,int)
+	- void chess_draw(int,int,state,point*)
+}
+
+class chessstack{
+	+ chessstack()
+	+ ~chessstack()
+	+ piece* get_last_piece(void)
+	+ bool pop(void)
+	+ bool push(piece*)
+	+ bool isempty()
+	+ int getn(void)
+	+ void replay()
+	- int num
+	- std::stack<piece*> s;
+}
+
+abstract class response{
+	+ enum type{put,withdraw,giveup,prohibit}
+	+ virtual response::type get_response_type()=0
+}
+class put{
+	+ virtual response::type get_response_type()
+}
+class withdraw{
+	+ virtual response::type get_response_type()
+}
+class giveup{
+	+ virtual response::type get_response_type()
+}
+class prohibit{
+	+ virtual response::type get_response_type()
+}
+response<|-- put
+response<|-- withdraw
+response<|-- giveup
+response<|-- prohibit
+
+class handle{
+	+ enum type{none,l3,l4,l5,ll}
+	+ handle()
+	+ ~handle()
+	+ handle::type get_type(chessboard*,point*,int,int)
+	+ bool check_prohibit(chessboard*,point*)
+	+ bool isfive(chessboard*,point*)
+	- const int vec[4][2]
+	- int single_find_same(chessboard*,piece*,int,int)
+	- int double_find_same(chessboard*,piece*,int,int)
+	- int distance_xboarder(int)
+	- int distance_yboarder(int)
+}
+
+abstract class player{
+	+ virtual response* send_response(chessboard*,point*)=0
+	+ virtual point* send_point(chessboard*,point*)=0
+	+ virtual bool allow_withdraw(chessboard*,point*)=0
+}
+class myplayer{
+	+ myplayer()
+	+ virtual response* send_response(chessboard*,point*)
+	+ virtual point* send_point(chessboard*,point*)
+	+ virtual bool allow_withdraw(chessboard*,point*)
+	- const long scoretable[11]
+	- const int vec[4][2]
+	- long get_score(int,int)
+	- long mark_vec(chessboard*,int,int,chessboard::state,int,int)
+	- long mark(chessboard*,int,int,chessboard::state)
+	- handle hd
+}
+class yourplayer{
+	+ virtual response* send_response(chessboard*,point*)
+	+ virtual point* send_point(chessboard*,point*)
+	+ virtual bool allow_withdraw(chessboard*,point*)
+}
+myplayer<|-- player
+yourplayer<|-- player
+
+abstract class judge{
+	+ virtual bool iswin(void)=0
+	+ virtual void inter(player*,player*)=0
+	+ virtual void end(void)=0
+}
+class myjudge{
+	+ myjudge()
+	+ ~myjudge()
+	+ virtual bool iswin(void)
+	+ virtual void inter(player*,player*)
+	+ virtual void end(void)
+	- bool win
+	- bool white
+	- chessboard jcb
+	- chessstack jcs
+	- handle hd
+	- bool isequal(bool,piece::color)
+	- bool judge_win(void)
+	- bool deal_put(player*)
+	- bool deal_withdraw(player*)
+	- bool record_chess(void)
+	- bool show_record(void)
+}
+judge<|-- myjudge
+
+class chessgame{
+	+ chessgame()
+}
+@enduml
