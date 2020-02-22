@@ -16,4 +16,3 @@
   g++ -o main main.cpp chessboard.cpp chessstack.cpp handle.cpp judge.cpp player.cpp
   ./main
 #+end_src
-  注:只在Linux上运行过，windows上可以因为字体等导致棋盘错位
